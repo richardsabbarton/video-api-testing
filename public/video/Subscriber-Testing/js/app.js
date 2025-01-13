@@ -1,9 +1,12 @@
-
-let publisher
-
 let apiKey
 let sessionId
 let token
+
+let subscriber
+let subtoaudio = false
+
+let testing = true
+
 
 function getSessionCredentials(room){
   console.log("Getting Session and Token for room: ", room)
@@ -44,12 +47,13 @@ function initializeSession() {
   session.on('streamCreated', (event) => {
     const subscriberOptions = {
       insertMode: 'append',
-      width: '100%',
-      height: '100%',
-      publishVideo: false,
-      publishAudio: false
+      width: '320px',
+      height: '180px',
+      showControls: false,
+      subscribeToVideo: false,
+      subscribeToAudio: false
     };
-    session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
+    subscriber = session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
   });
 
   session.on('sessionDisconnected', (event) => {
@@ -72,7 +76,7 @@ function initializeSession() {
     height: '100%',
     resolution: '1280x720'
   };
-  publisher = OT.initPublisher('publisher', publisherOptions, handleError);
+  const publisher = OT.initPublisher('publisher', publisherOptions, handleError);
 
   // Connect to the session
   session.connect(token, (error) => {
@@ -86,3 +90,13 @@ function initializeSession() {
 }
 
 
+
+function test1(delay){
+  subtoaudio = !subtoaudio
+  subscriber.subscribeToAudio(subtoaudio)
+  if(testing){
+    setTimeout(()=>{test1(delay)}, delay)
+  }
+}
+
+function abort(){testing = false}
