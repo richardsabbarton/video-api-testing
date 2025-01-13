@@ -16,9 +16,9 @@ const apiSecret = process.env.VIDEO_API_SECRET;
 const opentok = new OpenTok(apiKey, apiSecret)
 
 
-
-
 app.use(express.static('public'))
+app.use(express.json()) 
+
 
 app.get('/', (req, res) => {
   res.redirect('/app.html')
@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 app.get('/session/:room',(req, res)=>{
   const { room: roomName } = req.params
   const getUrl = 'https://neru-68eeb4cf-video-server-live.euw1.runtime.vonage.cloud/session/' + roomName
-  console.log("GETTING: ", getUrl)
+
   https.get(getUrl, (response) => {
     console.log('statusCode:', response.statusCode);
     console.log('headers:', response.headers);
@@ -87,19 +87,28 @@ app.get('/session/:room',(req, res)=>{
 
 }); */
 
-app.post('/callback/:endpoint',(req, res)=>{
+app.post('/callbacks/:endpoint',(req, res)=>{
   const { endpoint: endpointName } = req.params
+  
   console.log("Received Callback for Endpoint: " + endpointName)
   console.log(req.body)
+
   res.sendStatus(200)
   
 })
+
+app.get('/test', async (req, res) => {
+
+  console.log("test");
+  res.sendStatus(200);
+});
 
 app.get('/_/health', async (req, res) => {
   res.sendStatus(200);
 });
 
 const port = process.env.NERU_APP_PORT || process.env.PORT || 5000;
+
 app.listen(port, () => {
-  console.log(`Application Listing ON Port: ${port}`)
+  console.log(`Application Listening ON Port: ${port}`)
 })

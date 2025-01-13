@@ -1,0 +1,17 @@
+project:
+  name: video-api-testing
+instance:
+  name: live
+  runtime: nodejs16
+  region: aws.euw1
+  application-id: 5f274f63-56c7-4f27-a911-3cc9078c08bd
+  entrypoint: [node, server.js]
+  environment:
+    - name: VIDEO_API_KEY
+      value: "47695101"
+    - name: VIDEO_API_SECRET
+      value: "f3f1720587af35544dc686e1a1c6d8f0bd54fad7"
+debug:
+  name: debug
+  entrypoint: [node, server.js]
+
