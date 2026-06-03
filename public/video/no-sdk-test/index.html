@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NO SDK</title>
+    </head>
+    <body>
+
+        <input type="file" id="iFile">
+
+        <button id="startcam">Start Camera</button>
+
+        <video width="400" height="300" id="video" autoplay playsinline></video>
+
+        <script>
+            let btn = document.getElementById('startcam')
+            let video = document.getElementById('video')
+            
+            btn.onclick = (event)=>{
+                navigator.mediaDevices.getUserMedia({video: true})
+                .then((ms)=>{
+                    video.srcObject = ms
+                    
+                })
+                
+            }
+        </script>
+
+
+
+    </body>
+</html>

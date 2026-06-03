@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> OpenTok Getting Started </title>
+        <link href="css/app.css" rel="stylesheet" type="text/css">
+        <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
+        <script src="/js/common/session.js"></script>
+    </head>
+    <body>
+        <div id="admininfo">
+            
+        </div>
+
+        <h1> Broadcast Options </h1>
+        <textarea class="bcoptions" id="broadcastOptions"></textarea>
+        <h4> Broadcast Info</h4>
+        <textarea class="bcinfo" id="broadcastInfo"></textarea><br>
+        Launch Delay (ms) <input id="launchDelay" type="number" value="2000">
+        <button id="startBroadcast">Start Broadcast</button>
+        <button id="stopBroadcast">Stop Broadcast</button>
+        
+
+        <div id="divPublisher"></div>
+        <script type="text/javascript" src="./js/app.js"></script>
+    </body>
+</html>

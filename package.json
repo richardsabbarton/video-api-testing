@@ -4,13 +4,15 @@
   "description": "Node, express, www, JS, Vonage Video API Testing",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "deploy": "vcr deploy --region aws.euw1"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "@vonage/client-sdk-video": "^2.32.0-alpha.4",
     "cookie-parser": "",
-    "neru-alpha": "^4.0.1",
     "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "neru-alpha": "^4.0.1",
     "opentok": "^2.11.0"
   },
   "engines": {

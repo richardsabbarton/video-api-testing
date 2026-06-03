@@ -1,0 +1,24 @@
+body, html {
+    background-color: black;
+    height: 100%;
+    color: white;
+    font-family: monospace;
+}
+
+.btn {
+    font-family: monospace;
+}
+
+.bcoptions {
+    width: 500px;
+    height: 400px;
+    margin: 10px;
+    padding: 10px;
+}
+
+.bcinfo {
+    width: 500px;
+    height: 200px;
+    margin: 10px;
+    padding: 10px;
+}

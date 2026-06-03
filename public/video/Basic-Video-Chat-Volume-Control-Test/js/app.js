@@ -1,27 +1,33 @@
 
 let publisher
+let subscribers = new Array()
 
 let apiKey
 let sessionId
 let token
 
-let timestamps = {}
-timestamps.load = performance.now()
+function getSessionCredentials(room){
+  console.log("Getting Session and Token for room: ", room)
+  fetch('https://neru-68eeb4cf-video-server-live.euw1.runtime.vonage.cloud/session/47807831/' + room).then(function fetch(res) {
+      return res.json()
+  }).then(function fetchJson(json) {
+      //json = JSON.parse(json)
+      console.log(json)
+      apiKey = json.apiKey
+      sessionId = json.sessionId
+      token = json.token
+      initializeSession()
+  }).catch(function catchErr(error) {
+      console.log(error);
+      console.log('Failed to get opentok sessionId and token. Make sure you have updated the config.js file.');
+  })
+}
 
 let roomName = new URLSearchParams(window.location.search).get('roomName')
-let urlApiKey = new URLSearchParams(window.location.search).get('apiKey')
-if(!urlApiKey) urlApiKey = '47807831'
-console.log('Using Room: ' + roomName)
-console.log('Using apiKey: ' + urlApiKey)
-timestamps.getSessionCredentials = performance.now()
-getSessionCredentials(urlApiKey, roomName)
-.then(json=>{
-  timestamps.getSessionCredentialsTook = performance.now() - timestamps.getSessionCredentials
-  apiKey = json.apiKey
-  sessionId = json.sessionId
-  token = json.token
-  initializeSession()
-})
+
+getSessionCredentials(roomName)
+
+
 
 function handleError(error) {
   if (error) {
@@ -34,14 +40,16 @@ function handleError(error) {
 
 function initializeSession() {
 
-  timestamps.init = performance.now()
 
+  navigator.mediaDevices.getUserMedia({video: true, audio: true})
+
+  
   const session = OT.initSession(apiKey, sessionId);
 
-  timestamps.initSessionTook = performance.now() - timestamps.init
+  
+
   // Subscribe to a newly created stream
   session.on('streamCreated', (event) => {
-    console.log('Stream Created:')
     const subscriberOptions = {
       insertMode: 'append',
       width: '100%',
@@ -49,8 +57,7 @@ function initializeSession() {
       publishVideo: false,
       publishAudio: false
     };
-    timestamps.subscribe = performance.now()
-    session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
+    subscribers.push(session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError));
   });
 
   session.on('sessionDisconnected', (event) => {
@@ -66,6 +73,7 @@ function initializeSession() {
   session.on("connectionCreated", (event)=>{ console.log(event.type, event.connection.id)})
   session.on("connectionDestroyed", (event)=>{ console.log(event.type, event.connection.id)})
   
+  
   // initialize the publisher
   const publisherOptions = {
     insertMode: 'append',
@@ -73,23 +81,27 @@ function initializeSession() {
     height: '100%',
     resolution: '1280x720'
   };
-  timestamps.createPublisher = performance.now()
+  
   publisher = OT.initPublisher('publisher', publisherOptions, handleError);
-  timestamps.createPublisherTook = performance.now() - timestamps.createPublisher
 
   // Connect to the session
-  timestamps.sessionConnect = performance.now()
   session.connect(token, (error) => {
-    timestamps.sessionConnectTook = performance.now() - timestamps.sessionConnect
-    timestamps.sessionConnected = performance.now()
     if (error) {
       handleError(error);
     } else {
       // If the connection is successful, publish the publisher to the session
-      timestamps.publish = performance.now()
       session.publish(publisher, handleError);
     }
   });
 }
 
 
+function setSubscriberVolume(){
+  let newVolume = document.getElementById('subvol').value * 1
+  console.log('Setting ALL Subscriber Volume to: ', newVolume)
+  subscribers.forEach((sub)=>{
+    //sub.setAudioVolume(newVolume)
+    sub.videoElement().volume = newVolume / 100
+  })
+  console.log('Set volume for ', subscribers.length, ' subscribers')
+}

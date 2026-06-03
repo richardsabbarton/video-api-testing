@@ -10,7 +10,7 @@ timestamps.load = performance.now()
 
 let roomName = new URLSearchParams(window.location.search).get('roomName')
 let urlApiKey = new URLSearchParams(window.location.search).get('apiKey')
-if(!urlApiKey) urlApiKey = '47807831'
+if(!urlApiKey) urlApiKey = '47812461'
 console.log('Using Room: ' + roomName)
 console.log('Using apiKey: ' + urlApiKey)
 timestamps.getSessionCredentials = performance.now()
@@ -36,7 +36,25 @@ function initializeSession() {
 
   timestamps.init = performance.now()
 
-  const session = OT.initSession(apiKey, sessionId);
+  const sessionOptions = {
+    encryptionSecret: apiKey,  // All participants MUST use the same secret
+    singlePeerConnection: true        // Enable Single Peer Connection
+}
+
+  const session = OT.initSession(apiKey, sessionId, sessionOptions);
+
+  const shareScreenButton = document.getElementById('sharescreen')
+  shareScreenButton.onclick = (event)=>{
+    const screenPublisherOptions = {
+      videoSource: 'screen',
+      insertMode: 'append',
+      publishAudio: false
+    };
+    console.log('publishing screen')
+    console.log(screenPublisherOptions)
+    const screenPublisher = OT.initPublisher('publisher', screenPublisherOptions, handleError);
+    session.publish(screenPublisher, handleError)
+  }
 
   timestamps.initSessionTook = performance.now() - timestamps.init
   // Subscribe to a newly created stream

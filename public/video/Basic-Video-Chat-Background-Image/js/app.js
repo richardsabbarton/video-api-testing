@@ -1,6 +1,7 @@
 
 let publisher
 
+
 let apiKey
 let sessionId
 let token
@@ -71,7 +72,12 @@ function initializeSession() {
     insertMode: 'append',
     width: '100%',
     height: '100%',
-    resolution: '1280x720'
+    resolution: '1280x720',
+    name: "Richard",
+    initials: "RS",
+    style: {
+      backgroundImageURI: `https://${document.location.host}/video/Basic-Video-Chat-Background-Image/richard.png`
+    }
   };
   timestamps.createPublisher = performance.now()
   publisher = OT.initPublisher('publisher', publisherOptions, handleError);

@@ -5,23 +5,28 @@ let apiKey
 let sessionId
 let token
 
-let timestamps = {}
-timestamps.load = performance.now()
+function getSessionCredentials(room){
+  console.log("Getting Session and Token for room: ", room)
+  fetch('https://neru-68eeb4cf-video-server-live.euw1.runtime.vonage.cloud/session/47807831/' + room).then(function fetch(res) {
+      return res.json()
+  }).then(function fetchJson(json) {
+      //json = JSON.parse(json)
+      console.log(json)
+      apiKey = json.apiKey
+      sessionId = json.sessionId
+      token = json.token
+      initializeSession()
+  }).catch(function catchErr(error) {
+      console.log(error);
+      console.log('Failed to get opentok sessionId and token. Make sure you have updated the config.js file.');
+  })
+}
 
 let roomName = new URLSearchParams(window.location.search).get('roomName')
-let urlApiKey = new URLSearchParams(window.location.search).get('apiKey')
-if(!urlApiKey) urlApiKey = '47807831'
-console.log('Using Room: ' + roomName)
-console.log('Using apiKey: ' + urlApiKey)
-timestamps.getSessionCredentials = performance.now()
-getSessionCredentials(urlApiKey, roomName)
-.then(json=>{
-  timestamps.getSessionCredentialsTook = performance.now() - timestamps.getSessionCredentials
-  apiKey = json.apiKey
-  sessionId = json.sessionId
-  token = json.token
-  initializeSession()
-})
+
+getSessionCredentials(roomName)
+
+
 
 function handleError(error) {
   if (error) {
@@ -33,15 +38,16 @@ function handleError(error) {
 
 
 function initializeSession() {
+  
+  let proxyUrl = 'https://euproxy.opentok.com'
+  console.log(OT.setProxyUrl(proxyUrl))
+  console.log(`proxyUrl set to: ${proxyUrl}`)
 
-  timestamps.init = performance.now()
-
+  
   const session = OT.initSession(apiKey, sessionId);
 
-  timestamps.initSessionTook = performance.now() - timestamps.init
   // Subscribe to a newly created stream
   session.on('streamCreated', (event) => {
-    console.log('Stream Created:')
     const subscriberOptions = {
       insertMode: 'append',
       width: '100%',
@@ -49,8 +55,15 @@ function initializeSession() {
       publishVideo: false,
       publishAudio: false
     };
-    timestamps.subscribe = performance.now()
-    session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
+    subscriber = session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
+    subscriber.on('captionReceived', function(event){
+      console.log(`Caption received for stream ${event.streamId}`);
+      console.log(`Caption text: ${event.caption}`);
+      console.log(`Final text: ${event.isFinal}`);
+    })
+    
+    subscriber.subscribeToCaptions(true);
+    
   });
 
   session.on('sessionDisconnected', (event) => {
@@ -71,22 +84,17 @@ function initializeSession() {
     insertMode: 'append',
     width: '100%',
     height: '100%',
-    resolution: '1280x720'
+    resolution: '1280x720',
+    publishCaptions: true
   };
-  timestamps.createPublisher = performance.now()
   publisher = OT.initPublisher('publisher', publisherOptions, handleError);
-  timestamps.createPublisherTook = performance.now() - timestamps.createPublisher
 
   // Connect to the session
-  timestamps.sessionConnect = performance.now()
   session.connect(token, (error) => {
-    timestamps.sessionConnectTook = performance.now() - timestamps.sessionConnect
-    timestamps.sessionConnected = performance.now()
     if (error) {
       handleError(error);
     } else {
       // If the connection is successful, publish the publisher to the session
-      timestamps.publish = performance.now()
       session.publish(publisher, handleError);
     }
   });

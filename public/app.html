@@ -15,14 +15,18 @@
         </p>
         
         <div id="access-form">
-            <b>Enter Room Name:</b> <input id="room-name" onkeyup="roomName=this.value" type="text" size="30" value="" onchange="window.location.href = `./app.html?roomName=${this.value}`">
+            <b>Enter Room Name:</b> <input id="room-name" onkeyup="roomName=this.value" type="text" size="30" value="" onchange="window.location.href = `./app.html?roomName=${this.value}&apiKey=${document.getElementById('api-key').value}`">
+            <b>Enter API Key:</b> <input id="api-key" onkeyup="apiKey=this.value" type="text" size="30" value="" onchange="window.location.href = `./app.html?roomName=${document.getElementById('room-name').value}&apiKey=${this.value}`">
         </div>
 
         <p>
             Then choose your method for accessing this room from the samples below.
         </p>
         <p>
-            Or just <a href="javascript:openTestPage('./session-info.html')">Get a Session Id and Token</a> for use in a Native SDK
+            Or just <a href="javascript:openTestPage('./session-info.html')">Get a Session Id and Token</a> for use in a Native SDK<br>
+            <br>
+            <a href="javascript:openTestPage('Session-Admin')">Session Admin Controls</a><br>
+            <br>
         </p>
 
         <ul>
@@ -33,7 +37,9 @@
             <li><a href="javascript:openTestPage('Publish-Devices')">Publish Devices</a></li>
             <li><a href="javascript:openTestPage('Publish-Canvas')">Publish Canvas</a></li>
             <li><a href="javascript:openTestPage('Stereo-Audio')">Publish Stereo Audio</a></li>
+            <li><a href="javascript:openTestPage('Basic-Video-Chat-EU-Proxy')">Basic Video Chat with EU Proxy Enabled</a></li>
             <li><a href="javascript:openTestPage('Connection-Test')">Session Connection Test</a></li>
+            <li><a href="javascript:openTestPage('Subscribe-Only')">Subscribe Only</a></li>
         </ul>
 
 
@@ -48,8 +54,14 @@
             <li><a href="javascript:openTestPage('Basic-Video-Chat-Ticket-2588730')">Testing Ticket 2588730</a></li>
             <li><a href="javascript:openTestPage('Subscriber-Testing')">Subscriber Testing Ticket 2630844</a></li>
             <li><a href="javascript:openTestPage('Basic-Video-Chat-x-logging')">Basic Video Chat (+extra logging for ticket #2725465)</a></li>
+            <li><a href="javascript:openTestPage('Basic-Video-Chat-VP9')">Basic Video Chat - VP9 specified in client</a></li>
+            <li><a href="javascript:openTestPage('Basic-Video-Chat-e2ee-spc')">Basic Video Chat - E2EE SPC (use 47812461)</a></li>
             <li><a href="javascript:openTestPage('ballroom-dancing')">BD TEST CODE</a></li>
-        
+            <li><a href="javascript:openTestPage('Basic-Video-Chat-Volume-Control-Test')">Basic Video Chat for Volume Control testing on Android</a></li>
+            <li><a href="javascript:openTestPage('no-sdk-test')">Camera test with no Vonage APIs</a></li>
+            <li><a href="javascript:openTestPage('Embedded-IFrame')">Testing Embedded iFrame box</a></li>
+            <li><a href="javascript:openTestPage('Basic-Video-Chat-Background-Image')">Basic Video Chat - Background Image (no video) replacement</a></li>
+            
         
         </ul>
 
@@ -58,27 +70,33 @@
 
         <script>
 
+            defaultApiKey = '47807831'
+            defaultRoom = 'Default-' + Math.round(Math.random()*9999)
+
             const urlParams = new URL(window.location.toLocaleString()).searchParams;
             let roomName = urlParams.get('roomName');
+            let apiKey = urlParams.get('apiKey');
 
             console.log(roomName)
+            console.log(apiKey)
 
-            if(roomName == null || roomName.length < 3)
-                window.location.href = "./app.html?roomName=default-1234"
-            
+            if(roomName == null || roomName.length < 3 || roomName == 'null'){
+                window.location.href = `./app.html?roomName=${defaultRoom}&apiKey=${apiKey}`
+            }
+            if(apiKey == null || typeof(apiKey) == undefined || apiKey.length < 3){
+                window.location.href = `./app.html?roomName=${roomName}&apiKey=${defaultApiKey}`
+            }
+                
             document.getElementById("room-name").value = roomName
+            document.getElementById("api-key").value = apiKey
             
             function openTestPage(page){
                 if(page != './session-info.html'){
                     page += '/'
                 }
-                let pageUrl = `./video/${page}?roomName=${roomName}`
+                let pageUrl = `./video/${page}?roomName=${roomName}&apiKey=${apiKey}`
                 window.location.href = pageUrl
 
             }
 
         </script>
-
-
-  </body>
-</html>

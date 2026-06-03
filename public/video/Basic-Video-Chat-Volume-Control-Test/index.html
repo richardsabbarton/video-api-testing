@@ -3,10 +3,12 @@
     <head>
         <title> OpenTok Getting Started </title>
         <link href="css/app.css" rel="stylesheet" type="text/css">
-        <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
-        <script src="/js/common/session.js"></script>
+        <script src="https://static.opentok.com/v2.28/js/opentok.min.js"></script>
     </head>
     <body>
+        <b>
+        subscriber.setAudioVolume( <input id="subvol" size="5" value="50"></input> ) <button onclick="setSubscriberVolume();">GO</button>
+        </b>
         <div id="videos">
             <div id="subscriber"></div>
             <div id="publisher"></div>

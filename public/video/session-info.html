@@ -24,7 +24,7 @@
             }
 
         </style>
-        <script src="../js/common/roomharness.js"></script>
+        <script src="../js/common/session.js"></script>
     </head>
     <body>
 
@@ -49,26 +49,18 @@
             let sessionId
             let token
 
-            function getSessionCredentials(room){
-                console.log("Getting Session and Token for room: ", room)
-                fetch('https://neru-68eeb4cf-video-server-live.euw1.runtime.vonage.cloud/session/47807831/' + room).then(function fetch(res) {
-                    return res.json()
-                }).then(function fetchJson(json) {
-                    //json = JSON.parse(json)
-                    console.log(json)
-                    apiKey = json.apiKey
-                    sessionId = json.sessionId
-                    token = json.token
-                    displaySessionCredentials(apiKey, sessionId, token)
-                }).catch(function catchErr(error) {
-                    console.log(error);
-                    console.log('Failed to get opentok sessionId and token. Make sure you have updated the config.js file.');
-                })
-            }
+            
 
             let roomName = new URLSearchParams(window.location.search).get('roomName')
-            console.log(roomName)
-            getSessionCredentials(roomName)
+            let urlApiKey = new URLSearchParams(window.location.search).get('apiKey')
+            if(!urlApiKey || urlApiKey == null) urlApiKey = '47807831'
+            console.log('Using Room: ' + roomName)
+            console.log('Using apiKey: ' + urlApiKey)
+            getSessionCredentials(urlApiKey, roomName)
+            .then((json)=>{
+                console.log(json)
+                displaySessionCredentials(json.apiKey, json.sessionId, json.token)
+            })
 
 
             

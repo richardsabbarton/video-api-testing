@@ -71,8 +71,12 @@ function initializeSession() {
     insertMode: 'append',
     width: '100%',
     height: '100%',
-    resolution: '1280x720'
+    resolution: '1280x720',
+    preferredVideoCodecs: ['vp9', 'vp8']
   };
+
+  //preferredVideoCodecs: ['vp9', 'vp8']
+
   timestamps.createPublisher = performance.now()
   publisher = OT.initPublisher('publisher', publisherOptions, handleError);
   timestamps.createPublisherTook = performance.now() - timestamps.createPublisher
